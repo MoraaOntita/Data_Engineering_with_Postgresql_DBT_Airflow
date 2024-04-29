@@ -2,9 +2,9 @@
 
 # Define variables
 PYTHON = python
-DB_CONNECTION_SCRIPT = data_models_sripts/db_connections.py
-CREATE_TABLES_SCRIPT = data_models_sripts/create_tables.py
-MAIN_SCRIPT = data_models_sripts/main.py
+DB_CONNECTION_SCRIPT = scripts/data_models_scripts/db_connections.py
+CREATE_TABLES_SCRIPT = scripts/data_models_scripts/create_tables.py
+MAIN_SCRIPT = scripts/data_models_scripts/main.py
 
 # Define targets
 .PHONY: run create_tables main
