@@ -6,6 +6,11 @@ from sqlalchemy import create_engine
 from scripts.logger import logging  # Import the logging module from your logger.py
 from scripts.exceptions import CustomException, error_message_detail
 
+from scripts.config import (
+    csv_file_path,
+    prod_postgres_conn,
+)
+
 class ProdDataLoader:
     def __init__(self, data_filepath: str, postgres_conn_id: str):
         self.data_filepath = data_filepath
@@ -66,7 +71,7 @@ class ProdDataLoader:
 
 def main():
     try:
-        data_loader = ProdDataLoader("/path/to/your/data/file.csv", "your_postgres_connection_string")
+        data_loader = ProdDataLoader(csv_file_path, prod_postgres_conn)
         data_loader.load_data()
     except CustomException as ce:
         logging.error("Custom exception occurred: {}".format(ce))
