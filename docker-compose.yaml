@@ -113,7 +113,6 @@ services:
       start_period: 30s
     restart: always
 
-
   airflow-webserver:
     <<: *airflow-common
     command: webserver
@@ -131,7 +130,6 @@ services:
       airflow-init:
         condition: service_completed_successfully
 
-
   airflow-scheduler:
     <<: *airflow-common
     command: scheduler
@@ -147,7 +145,6 @@ services:
       airflow-init:
         condition: service_completed_successfully
 
-        
   airflow-worker:
     <<: *airflow-common
     command: celery worker
