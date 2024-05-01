@@ -1,45 +1,42 @@
-from airflow import DAG
-from airflow.operators.bash_operator import BashOperator
-from datetime import datetime, timedelta
+from airflow.decorators import dag, task
+from datetime import datetime
+from scripts.config import (
+    csv_file_path,
+    prod_postgres_conn,
+    dev_postgres_conn,
+    staging_postgres_conn
+)
+from utils import load_data_to_postgres
 
-default_args = {
-    'owner': 'airflow',
-    'depends_on_past': False,
-    'start_date': datetime(2024, 4, 30),
-    'email_on_failure': False,
-    'email_on_retry': False,
-    'retries': 1,
-    'retry_delay': timedelta(minutes=5),
-}
-
-dag = DAG(
+@dag(
     'data_load_dag',
-    default_args=default_args,
-    description='A DAG to load data files into PostgreSQL',
-    schedule_interval=timedelta(days=1),  # Adjust the schedule interval as needed
+    schedule_interval='*/10 * * * *',  # Run every 10 minutes
+    start_date=datetime(2024, 4, 30),  # A day before the desired start date
+    catchup=False,
+    default_args={
+        'owner': 'airflow',
+        'email_on_failure': False,
+        'email_on_retry': False,
+        'retries': 1,
+    }
 )
+def data_load_dag():
+    @task()
+    def load_data_to_prod():
+        load_data_to_postgres(csv_file_path, prod_postgres_conn, 'prod_track_table', 'prod_trajectory_table')
 
-# Task to load data files into PostgreSQL in Prod environment
-load_data_prod = BashOperator(
-    task_id='load_data_prod',
-    bash_command='python /path/to/load_data_prod.py',  # Command to load data for Prod
-    dag=dag,
-)
+    @task()
+    def load_data_to_dev():
+        load_data_to_postgres(csv_file_path, dev_postgres_conn, 'dev_track_table', 'dev_trajectory_table')
 
-# Task to load data files into PostgreSQL in Dev environment
-load_data_dev = BashOperator(
-    task_id='load_data_dev',
-    bash_command='python /path/to/load_data_dev.py',  # Command to load data for Dev
-    dag=dag,
-)
+    @task()
+    def load_data_to_staging():
+        load_data_to_postgres(csv_file_path, staging_postgres_conn, 'staging_track_table', 'staging_trajectory_table')
 
-# Task to load data files into PostgreSQL in Staging environment
-load_data_staging = BashOperator(
-    task_id='load_data_staging',
-    bash_command='python /path/to/load_data_staging.py',  # Command to load data for Staging
-    dag=dag,
-)
+    load_data_to_prod_task = load_data_to_prod()
+    load_data_to_dev_task = load_data_to_dev()
+    load_data_to_staging_task = load_data_to_staging()
 
-# Define task dependencies
-load_data_dev >> load_data_prod
-load_data_staging >> load_data_prod
+    load_data_to_prod_task >> [load_data_to_dev_task, load_data_to_staging_task]
+
+dag = data_load_dag()
