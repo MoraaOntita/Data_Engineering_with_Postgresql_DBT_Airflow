@@ -4,6 +4,7 @@ from airflow.operators.python import PythonOperator
 from airflow.operators.email import EmailOperator
 from config import csv_file_path, postgres_conn
 from utils import load_data_to_postgres
+import os
 
 default_args = {
     'owner': 'airflow',
@@ -37,12 +38,16 @@ with DAG(
         python_callable=load_data_to_tables
     )
 
+    
+    email_username = os.getenv("EMAIL_USERNAME")
+
     email_on_failure = EmailOperator(
         task_id='email_on_failure',
-        to='your@email.com',  # Add your email here
+        to=email_username,  # Using the username from the .env file
         subject='{{ ti.task_id }} Failed',
         html_content='Hi, <br> The task {{ ti.task_id }} in DAG {{ dag.dag_id }} failed.',
         trigger_rule='all_failed',
+        dag=dag
     )
 
     load_data_to_tables_task >> email_on_failure
