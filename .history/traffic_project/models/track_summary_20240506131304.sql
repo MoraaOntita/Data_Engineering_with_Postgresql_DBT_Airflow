@@ -43,3 +43,6 @@ SELECT
     ]) }}
 FROM
     {{ track_summary_summary_stats() }} summary;
+
+{% test not_null('traveled_d') %}
+{% test unique('track_id') %}

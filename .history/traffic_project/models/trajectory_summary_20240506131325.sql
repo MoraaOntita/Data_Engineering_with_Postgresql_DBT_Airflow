@@ -40,3 +40,6 @@ SELECT
     ]) }}
 FROM
     {{ trajectory_summary_stats() }} summary;
+
+{% test not_null('distance') %}
+{% test unique('trajectory_id') %}
