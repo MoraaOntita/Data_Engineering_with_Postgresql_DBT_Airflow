@@ -1,0 +1,8 @@
+# models/sources.yml
+
+version: 2
+
+sources:
+  - name: df_track
+    tables:
+      - name: track_data
