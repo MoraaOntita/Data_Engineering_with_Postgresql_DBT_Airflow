@@ -1,0 +1,18 @@
+version: 2
+
+sources:
+  - name: df_track
+    tables:
+      - name: track
+        identifier: track_id
+        columns:
+          - name: track_id
+            tests:
+              - unique
+          - name: type
+          - name: traveled_d
+            tests:
+              - not_null
+          - name: avg_speed
+            tests:
+              - not_null

@@ -1,0 +1,18 @@
+version: 2
+
+sources:
+  - name: df_trajectory
+    tables:
+      - name: trajectory
+        identifier: trajectory_id
+        columns:
+          - name: trajectory_id
+            tests:
+              - unique
+          - name: track_id
+          - name: distance
+            tests:
+              - not_null
+          - name: speed
+            tests:
+              - not_null
