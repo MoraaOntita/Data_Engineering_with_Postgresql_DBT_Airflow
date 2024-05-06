@@ -4,8 +4,8 @@ from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.operators.email import EmailOperator
 from airflow.providers.postgres.operators.postgres import PostgresOperator
-from utils import load_data_to_postgres 
-from config import csv_file_path, postgres_conn 
+from utils import load_data_to_postgres  # Assuming this imports the required function
+from config import csv_file_path, postgres_conn  # Assuming these are correctly defined
 
 default_args = {
     'owner': 'airflow',
