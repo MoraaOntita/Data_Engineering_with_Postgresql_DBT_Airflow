@@ -5,7 +5,7 @@ from airflow.operators.python import PythonOperator
 from airflow.operators.email import EmailOperator
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 from utils import load_data_to_postgres 
-from config import csv_file_path 
+from config import csv_file_path, postgres_conn 
 
 default_args = {
     'owner': 'airflow',
@@ -30,14 +30,14 @@ with DAG(
 
     log_query = PostgresOperator(
         task_id="log_query",
-        postgres_conn_id="wk2_postgres",
+        postgres_conn_id=postgres_conn,
         sql="sql/log_format.sql"
     )
 
     def load_data_to_tables():
         track_table = 'track_table'
         trajectory_table = 'trajectory_table'
-        load_data_to_postgres(csv_file_path, track_table, trajectory_table)
+        load_data_to_postgres(csv_file_path, postgres_conn, track_table, trajectory_table)
 
     load_data_to_tables_task = PythonOperator(
         task_id='load_data_to_tables',
