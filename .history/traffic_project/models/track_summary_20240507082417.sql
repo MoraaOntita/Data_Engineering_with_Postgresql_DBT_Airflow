@@ -1,3 +1,4 @@
+-- models/track_summary.sql
 
 /*
 This model calculates summary statistics for each track based on data from the df_track table.
@@ -5,7 +6,6 @@ It calculates total distance traveled, average speed, and maximum speed for each
 Input: df_track (source table containing track information)
 Output: summary (table containing aggregated statistics for each track)
 */
-
 {{ config(materialized='table') }}
 
 -- Define a CTE to calculate summary statistics for each track
