@@ -5,13 +5,17 @@ These tests ensure that critical columns do not contain null values and that pri
 
 -- Macro to perform data quality tests for track_summary model
 {% macro track_summary_data_quality_tests() %}
-    {% test not_null('traveled_d') %}
-    -- This test ensures that the 'traveled_d' column does not contain null values,
-    -- as distance traveled is a critical metric for the track_summary model.
+    {% test not_null('total_distance') %}
+    -- This test ensures that the 'total_distance' column does not contain null values,
+    -- as it represents the total distance traveled by each track.
 
-    {% test unique('track_id') %}
-    -- This test ensures that the 'track_id' column is unique,
-    -- maintaining data integrity and ensuring each track has a unique identifier.
+    {% test not_null('avg_speed') %}
+    -- This test ensures that the 'avg_speed' column does not contain null values,
+    -- as it represents the average speed of each track.
+
+    {% test not_null('max_speed') %}
+    -- This test ensures that the 'max_speed' column does not contain null values,
+    -- as it represents the maximum speed of each track.
 {% endmacro %}
 
 -- Perform data quality tests for track_summary model

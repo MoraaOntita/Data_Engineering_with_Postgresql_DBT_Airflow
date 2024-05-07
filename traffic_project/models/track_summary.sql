@@ -6,6 +6,7 @@ Input: df_track (source table containing track information)
 Output: summary (table containing aggregated statistics for each track)
 */
 
+
 {{ config(materialized='table') }}
 
 -- Define a macro to add prefix to column names
@@ -53,4 +54,17 @@ SELECT
     max_speed -- Maximum speed of the track
 FROM
     {{ track_summary_summary_stats() }} summary;
+
+-- Perform data quality tests for track_summary model
+{% not_null(column='total_distance') %}
+-- This test ensures that the 'total_distance' column does not contain null values,
+-- as it represents the total distance traveled by each track.
+
+{% not_null(column='avg_speed') %}
+-- This test ensures that the 'avg_speed' column does not contain null values,
+-- as it represents the average speed of each track.
+
+{% not_null(column='max_speed') %}
+-- This test ensures that the 'max_speed' column does not contain null values,
+-- as it represents the maximum speed of each track.
 

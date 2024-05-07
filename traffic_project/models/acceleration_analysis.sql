@@ -17,18 +17,6 @@ Output: acceleration (view containing aggregated statistics for acceleration ana
     {{- join(prefixed_columns, ', ') -}}
 {%- endmacro %}
 
-
--- Define a macro to use for re-usable CTEs
-{% macro track_acceleration_stats() -%}
-    SELECT
-        track_id,
-        avg_acceleration,
-        max_acceleration,
-        median_acceleration
-    FROM
-        track_acceleration_stats
-{%- endmacro %}
-
 -- Define a CTE to calculate acceleration statistics for each track
 WITH track_acceleration_stats AS (
     SELECT
@@ -41,6 +29,17 @@ WITH track_acceleration_stats AS (
     GROUP BY
         track_id
 )
+
+-- Define a macro to use for re-usable CTEs
+{% macro track_acceleration_stats() -%}
+    SELECT
+        track_id,
+        avg_acceleration,
+        max_acceleration,
+        median_acceleration
+    FROM
+        track_acceleration_stats
+{%- endmacro %}
 
 -- Define the main model
 SELECT
