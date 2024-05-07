@@ -7,6 +7,16 @@ Output: summary (table containing aggregated statistics for each track's traject
 
 {{ config(materialized='table') }}
 
+-- Define a macro to add prefix to column names
+{% macro prefixed_columns(prefix, columns) -%}
+    {%- set prefixed_columns = [] -%}
+    {%- for column in columns -%}
+        {%- set prefixed_column = prefix ~ '.' ~ column -%}
+        {%- do prefixed_columns.append(prefixed_column) -%}
+    {%- endfor -%}
+    {{- join(prefixed_columns, ', ') -}}
+{%- endmacro %}
+
 -- Define a CTE to calculate summary statistics for each track's trajectory
 WITH trajectory_summary_stats AS (
     SELECT
@@ -19,11 +29,6 @@ WITH trajectory_summary_stats AS (
     GROUP BY
         track_id
 )
-
--- Define a macro to add prefix to column names
-{% macro prefixed_columns(prefix, columns) -%}
-    {{- join([prefix ~ '.' ~ column for column in columns], ', ') -}}
-{%- endmacro %}
 
 -- Define a macro to use for re-usable CTEs
 {% macro trajectory_summary_stats() -%}
@@ -44,3 +49,4 @@ SELECT
     avg_speed -- Average speed of the track's trajectory
 FROM
     {{ trajectory_summary_stats() }} summary;
+

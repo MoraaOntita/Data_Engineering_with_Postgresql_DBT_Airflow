@@ -7,6 +7,28 @@ Output: acceleration (view containing aggregated statistics for acceleration ana
 
 {{ config(materialized='view') }}
 
+-- Define a macro to add prefix to column names
+{% macro prefixed_columns(prefix, columns) -%}
+    {%- set prefixed_columns = [] -%}
+    {%- for column in columns -%}
+        {%- set prefixed_column = prefix ~ '.' ~ column -%}
+        {%- do prefixed_columns.append(prefixed_column) -%}
+    {%- endfor -%}
+    {{- join(prefixed_columns, ', ') -}}
+{%- endmacro %}
+
+
+-- Define a macro to use for re-usable CTEs
+{% macro track_acceleration_stats() -%}
+    SELECT
+        track_id,
+        avg_acceleration,
+        max_acceleration,
+        median_acceleration
+    FROM
+        track_acceleration_stats
+{%- endmacro %}
+
 -- Define a CTE to calculate acceleration statistics for each track
 WITH track_acceleration_stats AS (
     SELECT
@@ -20,22 +42,6 @@ WITH track_acceleration_stats AS (
         track_id
 )
 
--- Define a macro to add prefix to column names
-{% macro prefixed_columns(prefix, columns) -%}
-    {{- join([prefix ~ '.' ~ column for column in columns], ', ') -}}
-{%- endmacro %}
-
--- Define a macro to use for re-usable CTEs
-{% macro track_acceleration_stats() -%}
-    SELECT
-        track_id,
-        avg_acceleration,
-        max_acceleration,
-        median_acceleration
-    FROM
-        track_acceleration_stats
-{%- endmacro %}
-
 -- Define the main model
 SELECT
     track_id, -- Identifier for the track
@@ -44,3 +50,4 @@ SELECT
     median_acceleration -- Median acceleration of the track
 FROM
     {{ track_acceleration_stats() }} acceleration;
+
